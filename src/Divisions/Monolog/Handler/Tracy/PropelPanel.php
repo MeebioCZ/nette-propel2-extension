@@ -47,7 +47,7 @@ class PropelPanel
                 && strpos($item['file'], 'index.php') === false
                 && strpos($item['file'], 'temp') === false) {
 
-                $selected[] = $item['file'] . ' line: ' . $item['line'];
+                $selected[] = $item['class'] . $item['type'] . $item['function'] . ' line: ' . $item['line'] . '<br><span style="color: #8c8c8c">' . $item['file'] . '</span>';
             }
 
             if (count($selected) > 1) {
