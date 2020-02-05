@@ -38,11 +38,28 @@ class PropelPanel
 	 */
 	public function logQuery(array $record){
 
+        $stackTrace = debug_backtrace();
+        $selected = [];
+        foreach ($stackTrace as $item) {
+            if (
+                isset($item['file']) && strpos($item['file'], 'vendor') === false
+                && strpos($item['file'], 'Model\Base') === false
+                && strpos($item['file'], 'index.php') === false
+                && strpos($item['file'], 'temp') === false) {
+
+                $selected[] = $item['file'] . ' line: ' . $item['line'];
+            }
+
+            if (count($selected) > 1) {
+                break;
+            }
+        }
+
 		if(preg_match('/Time:(?:\s+)(?P<time>\d+|\d*\.\d+)ms \| Memory:(?:\s+)(?:\d+|\d*\.\d+)(?:[a-z]{2}) \| (?P<query>.*)/i',
 		              $record['message'],
 		              $matches)){
 			$this->profiledQueriesCounter += 1;
-			$this->queries[] = $record + $matches;
+			$this->queries[] = $record + ['stack' => $selected] + $matches;
 			$currentQuery    = $matches;
 		}else{
 			$this->unprofiledQueriesCounter += 1;
@@ -75,6 +92,11 @@ class PropelPanel
 			$output .= ($time ? $time.'&nbsp;ms' : 'null');
 
 			$output .= '</td><td>'.Helpers::dumpSql($query);
+            if (isset($record['stack'])) {
+                foreach ($record['stack'] as $line) {
+                    $output .= "<br>" . $line;
+                }
+            }
 
 			$output .= '</td></tr>';
 		}
