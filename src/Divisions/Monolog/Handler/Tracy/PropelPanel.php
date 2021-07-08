@@ -42,7 +42,7 @@ class PropelPanel
         $selected = [];
         foreach ($stackTrace as $item) {
             if (
-                isset($item['file']) && strpos($item['file'], 'vendor') === false
+                isset($item['file']) && isset($item['class']) && strpos($item['file'], 'vendor') === false
                 && strpos($item['file'], 'Model\Base') === false
                 && strpos($item['file'], 'index.php') === false
                 && strpos($item['file'], 'temp') === false) {
